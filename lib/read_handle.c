@@ -111,6 +111,10 @@ int _mosquitto_handle_publish(struct mosquitto *mosq)
 			return rc;
 		}
 	}
+	printf("Client %s received PUBLISH (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))",
+	             mosq->id, message->dup, message->msg.qos, message->msg.retain,
+	             message->msg.mid, message->msg.topic,
+	             (long)message->msg.payloadlen);
 	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG,
 			"Client %s received PUBLISH (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))",
 			mosq->id, message->dup, message->msg.qos, message->msg.retain,
@@ -119,6 +123,7 @@ int _mosquitto_handle_publish(struct mosquitto *mosq)
 
 	message->timestamp = mosquitto_time();
 	switch(message->msg.qos){
+		printf("mosq->inflight_messages : %d\n", mosq->inflight_messages);
 		case 0:
 			pthread_mutex_lock(&mosq->callback_mutex);
 			if(mosq->on_message){

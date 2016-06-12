@@ -49,6 +49,8 @@ Contributors:
 #include <mosquitto_broker.h>
 #include <memory_mosq.h>
 #include "util_mosq.h"
+#include "pub_client.c"
+#include "sub_client.c"
 
 struct mosquitto_db int_db;
 
@@ -135,6 +137,7 @@ int restore_privileges(void)
 	char err[256];
 	int rc;
 
+
 	if(getuid() == 0){
 		rc = setegid(0);
 		if(rc == -1){
@@ -201,7 +204,9 @@ int main(int argc, char *argv[])
 	struct timeval tv;
 #endif
 	struct mosquitto *ctxt, *ctxt_tmp;
-
+	struct client_config *pub_config;
+	struct client_config *pub_config1;
+	struct client_config *sub_config;
 #if defined(WIN32) || defined(__CYGWIN__)
 	if(argc == 2){
 		if(!strcmp(argv[1], "run")){
@@ -225,6 +230,24 @@ int main(int argc, char *argv[])
 	gettimeofday(&tv, NULL);
 	srand(tv.tv_sec + tv.tv_usec);
 #endif
+
+	/*				MQTT CLIENT				*/
+	sub_config = malloc(sizeof(struct client_config));
+	pub_config = malloc(sizeof(struct client_config));
+
+	sub_config->host = strdup("163.180.117.97");
+	sub_config->port = 1883;
+	sub_config->topic = strdup("NAMU/*");
+
+	
+	pub_config->host = strdup("163.180.117.97");
+	pub_config->port = 1883;
+	//pub_config->topic = strdup("NAMU/SLAVE/STATE");
+	pub_config->topic = strdup("NAMU/SLAVE/STATE");
+
+	publishThread(pub_config);	
+	//subscribeThread(sub_config);
+	/*				MQTT CLIENT				*/
 
 	memset(&int_db, 0, sizeof(struct mosquitto_db));
 

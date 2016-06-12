@@ -8,11 +8,11 @@ else
 all : mosquitto
 endif
 
-mosquitto : mosquitto.o bridge.o conf.o context.o database.o logging.o loop.o memory_mosq.o persist.o net.o net_mosq.o read_handle.o read_handle_client.o read_handle_server.o read_handle_shared.o security.o security_default.o send_client_mosq.o send_mosq.o send_server.o service.o subs.o sys_tree.o time_mosq.o tls_mosq.o util_mosq.o websockets.o will_mosq.o
-	${CROSS_COMPILE}${CC} $^ -o $@ ${LDFLAGS} $(BROKER_LIBS)
+mosquitto : mosquitto.o bridge.o conf.o context.o database.o logging.o loop.o memory_mosq.o persist.o net.o net_mosq.o read_handle.o read_handle_client.o read_handle_server.o read_handle_shared.o security.o security_default.o send_client_mosq.o send_mosq.o send_server.o service.o subs.o sys_tree.o time_mosq.o tls_mosq.o util_mosq.o websockets.o will_mosq.o client_shared.o 
+	${CROSS_COMPILE}${CC} $^ -o $@ ${CLIENT_LDFLAGS} $(BROKER_LIBS) -lpthread
 
 mosquitto.o : mosquitto.c mosquitto_broker.h
-	${CROSS_COMPILE}${CC} $(BROKER_CFLAGS) -c $< -o $@
+	${CROSS_COMPILE}${CC} $(BROKER_CFLAGS) -c $< -o $@ 
 
 bridge.o : bridge.c mosquitto_broker.h
 	${CROSS_COMPILE}${CC} $(BROKER_CFLAGS) -c $< -o $@
@@ -100,6 +100,11 @@ mosquitto_passwd : mosquitto_passwd.o
 
 mosquitto_passwd.o : mosquitto_passwd.c
 	${CROSS_COMPILE}${CC} $(CFLAGS) ${CPPFLAGS} -c $< -o $@
+
+
+client_shared.o : client_shared.c client_shared.h
+	${CROSS_COMPILE}${CC} -c $< -o $@ ${CLIENT_CFLAGS}
+
 
 install : all
 	$(INSTALL) -d ${DESTDIR}$(prefix)/sbin

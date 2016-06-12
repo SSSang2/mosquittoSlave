@@ -90,8 +90,9 @@ int mqtt3_handle_publish(struct mosquitto_db *db, struct mosquitto *context)
 	int i;
 	struct _mqtt3_bridge_topic *cur_topic;
 	bool match;
+	char payload_temp[1024];
 #endif
-
+	printf("============ mqtt3_handle_publish ===============\n");
 	dup = (header & 0x08)>>3;
 	qos = (header & 0x06)>>1;
 	if(qos == 3){
@@ -214,19 +215,48 @@ int mqtt3_handle_publish(struct mosquitto_db *db, struct mosquitto *context)
 		return rc;
 	}
 
+	/*	-----------------------------------------------------*/
+	// Relay publish contetnt to master broker
+	//if(strcmp(topic, "NAMU/SYSTEM/PUBLISH/RELAY")){
+	printf("%s, %s\n", topic, payload);
+	if(!strcmp(topic, "NAMU/SYSTEM/PUBLISH/RELAY")){
+		printf("NAMU/SYSTEM/PUBLISH/RELAY MESSAGE !!!!!\n");
+		systemPublish(db, payload, stored);
+	}
+	else{
+		char new_msg[1024];
+		strcpy(new_msg, topic);
+		strcat(new_msg, ",");
+		strcat(new_msg, payload);
+		systemPush(db, new_msg, stored);
+		// JSON Version
+		/*
+		strcpy(new_msg, "{\"topic\" : \"");
+		strcat(new_msg, topic);
+		strcat(new_msg, "\", \"message\" : \"");
+		strcat(new_msg, payload);
+		strcat(new_msg, "\"}");
+		systemPublish(db, new_msg, stored);
+		strcpy(payload_temp, new_msg);
+		*/
+	}
+	/*	-----------------------------------------------------*/
+
+
+
 	_mosquitto_log_printf(NULL, MOSQ_LOG_DEBUG, "Received PUBLISH from %s (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))", context->id, dup, qos, retain, mid, topic, (long)payloadlen);
 	if(qos > 0){
-		mqtt3_db_message_store_find(context, mid, &stored);
+			mqtt3_db_message_store_find(context, mid, &stored);
 	}
 	if(!stored){
-		dup = 0;
-		if(mqtt3_db_message_store(db, context->id, mid, topic, qos, payloadlen, payload, retain, &stored, 0)){
-			_mosquitto_free(topic);
-			if(payload) _mosquitto_free(payload);
-			return 1;
-		}
+			dup = 0;
+			if(mqtt3_db_message_store(db, context->id, mid, topic, qos, payloadlen, payload, retain, &stored, 0)){
+					_mosquitto_free(topic);
+					if(payload) _mosquitto_free(payload);
+					return 1;
+			}
 	}else{
-		dup = 1;
+			dup = 1;
 	}
 	switch(qos){
 		case 0:

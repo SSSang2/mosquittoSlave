@@ -22,7 +22,7 @@ Contributors:
 #include <mosquitto_broker.h>
 #include <memory_mosq.h>
 #include <time_mosq.h>
-
+#include <client_shared.h>
 #include "uthash.h"
 
 struct mosquitto *mqtt3_context_init(struct mosquitto_db *db, mosq_sock_t sock)
@@ -201,6 +201,7 @@ void mqtt3_context_disconnect(struct mosquitto_db *db, struct mosquitto *ctxt)
 	}
 	ctxt->disconnect_t = time(NULL);
 	_mosquitto_socket_close(db, ctxt);
+	numOfclient--;
 }
 
 void mosquitto__add_context_to_disused(struct mosquitto_db *db, struct mosquitto *context)

@@ -644,16 +644,24 @@ unknown_option:
 int client_opts_set(struct mosquitto *mosq, struct mosq_config *cfg)
 {
 	int rc;
-
+	printf("====================================================\n");
+	printf("----------------------------------------------------\n");
+	printf("#	CLIENT_OPTS_SET()\n");
+	printf("----------------------------------------------------\n");
+	printf("====================================================\n");
+	//printf("#will_topic : %s\n ", cfg->will_topic);
 	if(cfg->will_topic && mosquitto_will_set(mosq, cfg->will_topic,
 				cfg->will_payloadlen, cfg->will_payload, cfg->will_qos,
 				cfg->will_retain)){
 
+	//printf("#will_topic : %s\n ", cfg->will_topic);
 		if(!cfg->quiet) fprintf(stderr, "Error: Problem setting will.\n");
 		mosquitto_lib_cleanup();
 		return 1;
 	}
+	//printf("#cfg->username : %s\n", cfg->username);
 	if(cfg->username && mosquitto_username_pw_set(mosq, cfg->username, cfg->password)){
+	//printf("#cfg->username : %s\n", cfg->username);
 		if(!cfg->quiet) fprintf(stderr, "Error: Problem setting username and password.\n");
 		mosquitto_lib_cleanup();
 		return 1;
@@ -695,6 +703,8 @@ int client_opts_set(struct mosquitto *mosq, struct mosq_config *cfg)
 	}
 #endif
 	mosquitto_opts_set(mosq, MOSQ_OPT_PROTOCOL_VERSION, &(cfg->protocol_version));
+	//printf("#end_will_topic : %s\n ", cfg->will_topic);
+	//printf("#end_cfg->username : %s\n", cfg->username);
 	return MOSQ_ERR_SUCCESS;
 }
 
@@ -703,6 +713,8 @@ int client_id_generate(struct mosq_config *cfg, const char *id_base)
 	int len;
 	char hostname[256];
 
+	printf("#cfg->id_prefix : %s\n", cfg->id_prefix);
+	printf("#cfg->id : %s\n", cfg->id);
 	if(cfg->id_prefix){
 		cfg->id = malloc(strlen(cfg->id_prefix)+10);
 		if(!cfg->id){
@@ -717,6 +729,8 @@ int client_id_generate(struct mosq_config *cfg, const char *id_base)
 		hostname[255] = '\0';
 		len = strlen(id_base) + strlen("/-") + 6 + strlen(hostname);
 		cfg->id = malloc(len);
+		printf("#cfg->id : %s\n", cfg->id);
+		printf("#hostname : %s\n", hostname);
 		if(!cfg->id){
 			if(!cfg->quiet) fprintf(stderr, "Error: Out of memory.\n");
 			mosquitto_lib_cleanup();

@@ -40,7 +40,6 @@ Contributors:
 #define MQTT3_LOG_ALL 0xFF
 
 #define WEBSOCKET_CLIENT -2
-
 enum mosquitto_protocol {
 	mp_mqtt,
 	mp_mqttsn,

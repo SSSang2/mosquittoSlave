@@ -121,7 +121,7 @@ int _mosquitto_message_queue(struct mosquitto *mosq, struct mosquitto_message_al
 	/* mosq->*_message_mutex should be locked before entering this function */
 	assert(mosq);
 	assert(message);
-
+	printf("=========== _mosquitto_message_queue ==========\n");
 	if(dir == mosq_md_out){
 		mosq->out_queue_len++;
 		message->next = NULL;
@@ -148,6 +148,7 @@ int _mosquitto_message_queue(struct mosquitto *mosq, struct mosquitto_message_al
 		}
 		mosq->in_messages_last = message;
 	}
+	printf("_mosquitto_message_queue , inflight_messages : %d\n", mosq->inflight_messages);
 	return rc;
 }
 

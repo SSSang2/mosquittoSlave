@@ -307,8 +307,6 @@ int mqtt3_db_message_insert(struct mosquitto_db *db, struct mosquitto *context, 
 	int rc = 0;
 	int i;
 	char **dest_ids;
-
-	assert(stored);
 	if(!context) return MOSQ_ERR_INVAL;
 	if(!context->id) return MOSQ_ERR_SUCCESS; /* Protect against unlikely "client is disconnected but not entirely freed" scenario */
 
@@ -423,6 +421,11 @@ int mqtt3_db_message_insert(struct mosquitto_db *db, struct mosquitto *context, 
 		context->last_msg = msg;
 	}
 	context->msg_count++;
+	//printf("============== mqtt3_db_message_insert ==========\n");
+	//printf("context->msg_count : %d\n", context->msg_count);
+	//printf("================== meqq3_db_message_insert =========\n");
+	//printf("inflight : %d, %d\n", context->msg_count, msg->store->ref_count);
+	assert(stored);
 	if(qos > 0){
 		context->msg_count12++;
 	}
@@ -458,6 +461,8 @@ int mqtt3_db_message_insert(struct mosquitto_db *db, struct mosquitto *context, 
 
 #ifdef WITH_WEBSOCKETS
 	if(context->wsi && rc == 0){
+		
+	printf("---------------- mqtt3_db_message_write ---------------\n");
 		return mqtt3_db_message_write(db, context);
 	}else{
 		return rc;
@@ -526,6 +531,7 @@ int mqtt3_db_messages_easy_queue(struct mosquitto_db *db, struct mosquitto *cont
 int mqtt3_db_message_store(struct mosquitto_db *db, const char *source, uint16_t source_mid, const char *topic, int qos, uint32_t payloadlen, const void *payload, int retain, struct mosquitto_msg_store **stored, dbid_t store_id)
 {
 	struct mosquitto_msg_store *temp;
+	//printf("mid : %s , source : %s, topic : %s \n", source_mid, source, topic);
 
 	assert(db);
 	assert(stored);

@@ -26,7 +26,7 @@ Contributors:
 #include <time_mosq.h>
 #include <tls_mosq.h>
 #include <util_mosq.h>
-
+#include <client_shared.h>
 #ifdef WITH_UUID
 #  include <uuid/uuid.h>
 #endif
@@ -507,6 +507,10 @@ int mqtt3_handle_connect(struct mosquitto_db *db, struct mosquitto *context)
 			}else{
 				_mosquitto_log_printf(NULL, MOSQ_LOG_NOTICE, "New client connected from %s as %s (c%d, k%d).", context->address, client_id, clean_session, context->keepalive);
 			}
+			numOfclient++;
+			if(strcmp(client_id,"relay"))
+			setCount(numOfclient);
+			printf("New client connected, #Client : %d\n", numOfclient);
 		}
 	}
 

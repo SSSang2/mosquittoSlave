@@ -260,8 +260,9 @@ int main(int argc, char *argv[])
 	rc = client_connect(mosq, &cfg);
 	if(rc) return rc;
 
-
+	printf("#BEFORE loop forever\n");
 	rc = mosquitto_loop_forever(mosq, -1, 1);
+	printf("#AFTER loop forever\n");
 
 	mosquitto_destroy(mosq);
 	mosquitto_lib_cleanup();

@@ -328,6 +328,7 @@ int main(int argc, char *argv[])
 	password = cfg.password;
 	quiet = cfg.quiet;
 
+	printf("## %s\n", cfg.file_input);
 	if(cfg.pub_mode == MSGMODE_STDIN_FILE){
 		if(load_stdin()){
 			fprintf(stderr, "Error loading input from stdin.\n");

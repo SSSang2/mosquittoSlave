@@ -150,6 +150,7 @@ int _mosquitto_packet_queue(struct mosquitto *mosq, struct _mosquitto_packet *pa
 #endif
 	assert(mosq);
 	assert(packet);
+//	printf("=========== _mosquitto_packet_queue =========\n");
 
 	packet->pos = 0;
 	packet->to_process = packet->packet_length;
@@ -772,6 +773,11 @@ int _mosquitto_packet_write(struct mosquitto *mosq)
 	}
 
 	while(mosq->current_out_packet){
+		//printf("\nmosq->current_out_packet : %d\n",mosq->current_out_packet);
+		//printf("mosq->inflight_messages : %d\n\n", mosq->inflight_messages);
+		//printf("in_queue_len : %d\n", mosq->in_queue_len);
+		//printf("out_queue_len : %d\n\n", mosq->out_queue_len);
+
 		packet = mosq->current_out_packet;
 
 		while(packet->to_process > 0){
@@ -806,6 +812,7 @@ int _mosquitto_packet_write(struct mosquitto *mosq)
 		g_msgs_sent++;
 		if(((packet->command)&0xF6) == PUBLISH){
 			g_pub_msgs_sent++;
+			printf("g_pub_msgs_sent : %d\n", g_pub_msgs_sent);
 		}
 #  endif
 #else
@@ -993,6 +1000,7 @@ int _mosquitto_packet_read(struct mosquitto *mosq)
 #if defined(WITH_BROKER) && defined(WITH_SYS_TREE)
 			g_bytes_received += read_length;
 #endif
+			
 			mosq->in_packet.to_process -= read_length;
 			mosq->in_packet.pos += read_length;
 		}else{
